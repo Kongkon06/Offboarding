@@ -1,0 +1,74 @@
+
+<script>
+
+    // Initialize Select2 for employee dropdown
+    $(document).ready(function () {
+        $('.select2-employee').select2({
+            placeholder: 'Select Employee Code',
+            allowClear: true
+        });
+    });
+
+    // Handle form submission for initiating offboarding
+    function submitAsset(event) {
+        event.preventDefault(); // Prevent default form submission
+
+        const form = document.getElementById("UpdateAssetStatusForm");
+        const formData = new FormData(form);
+
+        // Collect form data for the offboarding initiation
+        const data = {
+            action: "UpdateAssetStatus",
+            emp_code: formData.get("emp_code"),
+            asset_type: formData.get("asset_type"),
+            status:formData.get("status"),
+            asset_description: formData.get("asset_description"),
+            return_date: formData.get("return_date"), // Include the offboarding records in the request
+        };
+
+        const submitButton = document.getElementById("submitButton");
+        const submitText = document.getElementById("submitText");
+        const submitSpinner = document.getElementById("submitSpinner");
+
+        // Disable button and show spinner
+        submitButton.disabled = true;
+        submitText.textContent = "Processing...";
+        submitSpinner.style.display = "inline-block";
+
+        // Perform the fetch request
+        fetch("test.php", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(data)
+        })
+            .then(response => response.json())
+            .then(result => {
+                const responseMessage = document.createElement("div");
+                responseMessage.className = "alert mt-3";
+
+                if (result.code === 200) {
+                    responseMessage.classList.add("alert-success");
+                    responseMessage.textContent = result.message;
+                } else {
+                    responseMessage.classList.add("alert-danger");
+                    responseMessage.textContent = `Error: ${result.message}`;
+                }
+
+                form.appendChild(responseMessage);
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                const errorMessage = document.createElement("div");
+                errorMessage.className = "alert alert-danger mt-3";
+                errorMessage.textContent = "An error occurred.";
+                form.appendChild(errorMessage);
+            })
+            .finally(() => {
+                submitButton.disabled = false;
+                submitText.textContent = "Initiate Process";
+                submitSpinner.style.display = "none";
+            });
+    }
+</script>
