@@ -91,7 +91,7 @@ $offboardingRecords = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     <div class="row g-3">
                         <div class="col-md-6">
                             <label class="form-label">Employee Code</label>
-                            <select class="form-select select2-employee" name="emp_code" required>
+                            <select class="form-select" name="emp_code" required>
                             <?php
 // Assuming $employeeList contains the result set from the query
 foreach ($offboardingRecords as $employee) {
@@ -326,14 +326,14 @@ foreach ($offboardingRecords as $employee) {
 
         const form = document.getElementById("initiateOffboardingForm");
         const formData = new FormData(form);
-
+        const selectedOffboardingRecord = offboardingRecords.find(record => record.emp_code === formData.get("emp_code") );
         // Collect form data for the offboarding initiation
         const data = {
             action: "InitiateOffboarding",
             emp_code: formData.get("emp_code"),
             exit_type: formData.get("exit_type"),
             last_working_day: formData.get("last_working_day"),
-            offboarding_records: offboardingRecords // Include the offboarding records in the request
+            offboarding_records: selectedOffboardingRecord // Include the offboarding records in the request
         };
 
         const submitButton = document.getElementById("submitButton");
@@ -347,38 +347,39 @@ foreach ($offboardingRecords as $employee) {
 
         // Perform the fetch request
         fetch("test.php", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(data)
-        })
-        .then(result => {
-                const responseMessage = document.createElement("div");
-                responseMessage.className = "alert mt-3";
+    method: "POST",
+    headers: {
+        "Content-Type": "application/json"
+    },
+    body: JSON.stringify(data)
+})
+.then(response => response.json()) // Parse the JSON response
+.then(result => {
+    const responseMessage = document.createElement("div");
+    responseMessage.className = "alert mt-3";
 
-                if (result.code === 200) {
-                    responseMessage.classList.add("alert-success");
-                    responseMessage.textContent = result.message;
-                } else {
-                    responseMessage.classList.add("alert-danger");
-                    responseMessage.textContent = `Error: ${result.message}`;
-                }
+    if (result.code === 200) {
+        responseMessage.classList.add("alert-success");
+        responseMessage.textContent = result.message;
+    } else {
+        responseMessage.classList.add("alert-danger");
+        responseMessage.textContent = `Error: ${result.message}`;
+    }
 
-                form.appendChild(responseMessage);
-            })
-            .catch(error => {
-                console.error("Error:", error);
-                const errorMessage = document.createElement("div");
-                errorMessage.className = "alert alert-danger mt-3";
-                errorMessage.textContent = "An error occurred.";
-                form.appendChild(errorMessage);
-            })
-            .finally(() => {
-                submitButton.disabled = false;
-                submitText.textContent = "Initiate Process";
-                submitSpinner.style.display = "none";
-            });
+    form.appendChild(responseMessage);
+})
+.catch(error => {
+    console.error("Error:", error);
+    const errorMessage = document.createElement("div");
+    errorMessage.className = "alert alert-danger mt-3";
+    errorMessage.textContent = "An error occurred.";
+    form.appendChild(errorMessage);
+})
+.finally(() => {
+    submitButton.disabled = false;
+    submitText.textContent = "Initiate Process";
+    submitSpinner.style.display = "none";
+});
     }
 </script>
 <script>

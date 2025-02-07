@@ -11,68 +11,75 @@ error_log("Action: " . $action);
 // Log the entire body of the request to a file for debugging purposes
 file_put_contents('debug_log.txt', json_encode($inputData) . "\n", FILE_APPEND);
 
+function sendResponse($code, $message) {
+    echo json_encode(['code' => $code, 'message' => $message]);
+    exit; // Ensure no further output is sent
+}
+
 function syncEmployeeData($inputData) {
     global $db;
 
-    if (empty($inputData['offboarding_records']) || !is_array($inputData['offboarding_records'])) {
-        return ['code' => 400, 'message' => 'Invalid or missing offboarding_records'];
+    // Check if the required fields are present
+
+    // Get the specific employee data from the input
+    $data = $inputData['offboarding_records'];
+
+    try {
+        // Prepare the SQL statement for inserting the employee data
+        $stmt = $db->prepare("
+            INSERT INTO wy_employees (
+                emp_code, emp_password, first_name, last_name, dob, gender, marital_status, 
+                nationality, address, city, state, country, email, mobile, telephone, 
+                identity_doc, identity_no, emp_type, joining_date, blood_group, photo, 
+                designation, department, pan_no, bank_name, account_no, ifsc_code, pf_account, created
+            ) VALUES (
+                :emp_code, :emp_password, :first_name, :last_name, :dob, :gender, :marital_status, 
+                :nationality, :address, :city, :state, :country, :email, :mobile, :telephone, 
+                :identity_doc, :identity_no, :emp_type, :joining_date, :blood_group, :photo, 
+                :designation, :department, :pan_no, :bank_name, :account_no, :ifsc_code, :pf_account, :created
+            )
+        ");
+        
+        // Execute the prepared statement with the employee data
+        $stmt->execute([
+            ':emp_code' => $data['emp_code'],
+            ':emp_password' => $data['emp_password'],
+            ':first_name' => $data['first_name'],
+            ':last_name' => $data['last_name'],
+            ':dob' => $data['dob'],
+            ':gender' => $data['gender'],
+            ':marital_status' => 'aa', // Assuming marital status is fixed as 'aa'
+            ':nationality' => $data['nationality'],
+            ':address' => $data['address'],
+            ':city' => $data['city'],
+            ':state' => $data['state'],
+            ':country' => $data['country'],
+            ':email' => $data['email'],
+            ':mobile' => $data['mobile'],
+            ':telephone' => $data['telephone'],
+            ':identity_doc' => $data['identity_doc'],
+            ':identity_no' => $data['identity_no'],
+            ':emp_type' => $data['emp_type'],
+            ':joining_date' => $data['joining_date'],
+            ':blood_group' => $data['blood_group'],
+            ':photo' => $data['photo'],
+            ':designation' => $data['designation'],
+            ':department' => $data['department'],
+            ':pan_no' => $data['pan_no'],
+            ':bank_name' => $data['bank_name'],
+            ':account_no' => $data['account_no'],
+            ':ifsc_code' => $data['ifsc_code'],
+            ':pf_account' => $data['pf_account'],
+            ':created' => $data['created'],
+        ]);
+    } catch (Exception $e) {
+        // Convert the input data array to a JSON string for better readability in the error message
+        $inputDataString = json_encode($inputData);
+        sendResponse(500, 'Failed to insert employee data: ' . $e->getMessage() . ' Input Data: ' . $inputDataString);
     }
 
-    foreach ($inputData['offboarding_records'] as $data) {
-        try {
-            $stmt = $db->prepare("
-                INSERT INTO wy_employees (
-                    emp_code, emp_password, first_name, last_name, dob, gender, marital_status, 
-                    nationality, address, city, state, country, email, mobile, telephone, 
-                    identity_doc, identity_no, emp_type, joining_date, blood_group, photo, 
-                    designation, department, pan_no, bank_name, account_no, ifsc_code, pf_account, created
-                ) VALUES (
-                    :emp_code, :emp_password, :first_name, :last_name, :dob, :gender, :marital_status, 
-                    :nationality, :address, :city, :state, :country, :email, :mobile, :telephone, 
-                    :identity_doc, :identity_no, :emp_type, :joining_date, :blood_group, :photo, 
-                    :designation, :department, :pan_no, :bank_name, :account_no, :ifsc_code, :pf_account, :created
-                )
-            ");
-            
-            $stmt->execute([
-                ':emp_code' => $data['emp_code'],
-                ':emp_password' => $data['emp_password'],
-                ':first_name' => $data['first_name'],
-                ':last_name' => $data['last_name'],
-                ':dob' => $data['dob'],
-                ':gender' => $data['gender'],
-                ':marital_status' => 'aa',
-                ':nationality' => $data['nationality'],
-                ':address' => $data['address'],
-                ':city' => $data['city'],
-                ':state' => $data['state'],
-                ':country' => $data['country'],
-                ':email' => $data['email'],
-                ':mobile' => $data['mobile'],
-                ':telephone' => $data['telephone'],
-                ':identity_doc' => $data['identity_doc'],
-                ':identity_no' => $data['identity_no'],
-                ':emp_type' => $data['emp_type'],
-                ':joining_date' => $data['joining_date'],
-                ':blood_group' => $data['blood_group'],
-                ':photo' => $data['photo'],
-                ':designation' => $data['designation'],
-                ':department' => $data['department'],
-                ':pan_no' => $data['pan_no'],
-                ':bank_name' => $data['bank_name'],
-                ':account_no' => $data['account_no'],
-                ':ifsc_code' => $data['ifsc_code'],
-                ':pf_account' => $data['pf_account'],
-                ':created' => $data['created'],
-            ]);
-        } catch (Exception $e) {
-            return ['code' => 500, 'message' => 'Failed to insert employee data: ' . $e->getMessage()];
-        }
-    }
-
-    return ['code' => 200, 'message' => 'Employee data synced successfully'];
+    sendResponse(200, 'Employee data synced successfully');
 }
-
 
 function initiateOffboarding($inputData) {
     global $db;
@@ -83,41 +90,40 @@ function initiateOffboarding($inputData) {
     $exitInterview = $inputData['exit_interview'] ?? '';
 
     if (empty($empCode) || empty($exitType) || empty($lastWorkingDay)) {
-        return ['code' => 400, 'message' => 'Missing required fields'];
+        sendResponse(400, 'Missing required fields');
     }
 
     try {
         $stmt = $db->prepare("INSERT INTO Offboarding 
-                            (emp_code, last_working_day, offboarding_type, reason, exit_interview) 
+                            (emp_code, last_work ing_day, offboarding_type, reason, exit_interview) 
                             VALUES (?, ?, ?, ?, ?)");
         $stmt->execute([$empCode, $lastWorkingDay, $exitType, $reason, $exitInterview]);
 
-        return ['code' => 200, 'message' => 'Offboarding initiated successfully'];
+        sendResponse(200, 'Offboarding initiated successfully');
     } catch (Exception $e) {
-        return ['code' => 500, 'message' => 'Failed to initiate offboarding: ' . $e->getMessage()];
+        sendResponse(500, 'Failed to initiate offboarding: ' . $e->getMessage());
     }
 }
 
-// function updateAssetStatus($inputData) {
-//     global $db;
-//     $empCode = $inputData['emp_code'] ?? '';
-//     $assetType = $inputData['asset_type'] ?? '';
-//     $returnDay = $inputData['return_date'] ?? '';
-//     $status = $inputData['status'] ?? '';
-//     $assetDescription = $inputData['asset_description'] ?? '';
+function updateAssetStatus($inputData) {
+    global $db;
+    $empCode = $inputData['emp_code'] ?? '';
+    $assetType = $inputData['asset_type'] ?? '';
+    $returnDay = $inputData['return_date'] ?? '';
+    $status = $inputData['status'] ?? '';
+    $assetDescription = $inputData['asset_description'] ?? '';
 
+    try {
+        $stmt = $db->prepare("INSERT INTO Assets 
+                            (emp_code, return_date, asset_type, asset_description, returned) 
+                            VALUES (?, ?, ?, ?, ?)");
+        $stmt->execute([$empCode, $returnDay, $assetType, $assetDescription, $status]);
 
-//     try {
-//         $stmt = $db->prepare("INSERT INTO Assets 
-//                             (emp_code, return_date, asset_type, asset_description, returned) 
-//                             VALUES (?, ?, ?, ?, ?)");
-//         $stmt->execute([$empCode, $returnDay, $assetType, $assetDescription, $status]);
-
-//         return ['code' => 200, 'message' => 'Assets updated successfully'];
-//     } catch (Exception $e) {
-//         return ['code' => 500, 'message' => 'Failed to initiate offboarding: ' . $e->getMessage()];
-//     }
-// }
+        sendResponse(200, 'Assets updated successfully');
+    } catch (Exception $e) {
+        sendResponse(500, 'Failed to update asset status: ' . $e->getMessage());
+    }
+}
 
 function addExitInterview($data) {
     global $db;
@@ -159,15 +165,13 @@ function addExitInterview($data) {
 
         // Commit the transaction
         $db->commit();
-        echo json_encode(["message" => "Records updated and feedback inserted successfully."]);
+        sendResponse(200, "Records updated and feedback inserted successfully.");
     } catch (Exception $e) {
         // Roll back the transaction in case of error
         $db->rollBack();
-        echo json_encode(["error" => "Error: " . $e->getMessage()]);
+        sendResponse(500, "Error: " . $e->getMessage());
     }
 }
-
-
 
 if ($action === 'InitiateOffboarding') {
     $syncResult = syncEmployeeData($inputData);
@@ -177,9 +181,9 @@ if ($action === 'InitiateOffboarding') {
     } else {
         $response = $syncResult;
     }
-}else if ($action === 'AddExitInterview'){
+} else if ($action === 'AddExitInterview') {
     addExitInterview($inputData);
-}else if($action === 'UpdateAssetStatus'){
+} else if ($action === 'UpdateAssetStatus') {
     updateAssetStatus($inputData);
 }
 
