@@ -3,13 +3,9 @@ require_once 'original_db.php'; // Include the database connection
 
 // Prepare and execute the query
 $stmt = $origin_db->prepare("SELECT * FROM wy_employees ORDER BY emp_code");
-
-
 $stmt->execute();
-$offboardingRecords = $stmt->fetchAll(PDO::FETCH_ASSOC);
- // Fetch as associative array
-
-// Display the results
+$offboardingRecords = $stmt->fetchAll(PDO::FETCH_ASSOC); 
+// Fetch as associative array
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -35,49 +31,46 @@ $offboardingRecords = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 <h3>Initiate Offboarding</h3>
             </div>
             <div class="card-body">
-            <form id="initiateOffboardingForm" onsubmit="submitForm(event)">
-    <div class="row g-3">
-        <!-- Employee Code Dropdown -->
-        <div class="col-md-4">
-            <label class="form-label">Employee Code</label>
-            <select class="form-select select2-employee" name="emp_code" required>
-                <option value="" disabled selected>Select Employee Code</option> <!-- Placeholder -->
-                <?php
-                foreach ($offboardingRecords as $employee) {
-                    echo "<option value='{$employee['emp_code']}'>{$employee['emp_code']} - {$employee['first_name']} {$employee['last_name']}</option>";
-                }
-                ?>
-            </select>
-        </div>
+                <form id="initiateOffboardingForm" onsubmit="submitForm(event)">
+                    <div class="row g-3">
+                        <!-- Employee Code Dropdown -->
+                        <div class="col-md-4">
+                            <label class="form-label">Employee Code</label>
+                            <select class="form-select select2-employee" name="emp_code" required>
+                                <option value="" disabled selected>Select Employee Code</option>
+                                <?php foreach ($offboardingRecords as $employee): ?>
+                                    <option value='<?php echo $employee['emp_code']; ?>'><?php echo $employee['emp_code'] . ' - ' . $employee['first_name'] . ' ' . $employee['last_name']; ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
 
-        <!-- Exit Type Dropdown -->
-        <div class="col-md-4">
-            <label class="form-label">Exit Type</label>
-            <select class="form-select" name="exit_type" required>
-                <option value="" disabled selected>Select Exit Type</option> <!-- Placeholder -->
-                <option value="resignation">Resignation</option>
-                <option value="retirement">Retirement</option>
-                <option value="termination">Termination</option>
-            </select>
-        </div>
+                        <!-- Exit Type Dropdown -->
+                        <div class="col-md-4">
+                            <label class="form-label">Exit Type</label>
+                            <select class="form-select" name="exit_type" required>
+                                <option value="" disabled selected>Select Exit Type</option>
+                                <option value="resignation">Resignation</option>
+                                <option value="retirement">Retirement</option>
+                                <option value="termination">Termination</option>
+                            </select>
+                        </div>
 
-        <!-- Last Working Day Input -->
-        <div class="col-md-4">
-            <label class="form-label">Last Working Day</label>
-            <input type="date" class="form-control" name="last_working_day" min="<?php echo date('Y-m-d'); ?>" required>
-        </div>
+                        <!-- Last Working Day Input -->
+                        <div class="col-md-4">
+                            <label class="form-label">Last Working Day</label>
+                            <input type="date" class="form-control" name="last_working_day" min="<?php echo date('Y-m-d'); ?>" required>
+                        </div>
 
-        <!-- Submit Button -->
-        <div class="col-12">
-            <button type="submit" class="btn btn-primary" id="submitButton">
-                <span id="submitText">Initiate Process</span>
-                <span id="submitSpinner" class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="display: none;"></span>
-            </button>
-        </div>
-    </div>
-</form>
-
-<div id="responseMessage" style="margin-top: 1em;"></div>
+                        <!-- Submit Button -->
+                        <div class="col-12">
+                            <button type="submit" class="btn btn-primary" id="submitButton">
+                                <span id="submitText">Initiate Process</span>
+                                <span id="submitSpinner" class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="display: none;"></span>
+                            </button>
+                        </div>
+                    </div>
+                </form>
+                <div id="responseMessage" style="margin-top: 1em;"></div>
             </div>
         </div>
 
@@ -91,13 +84,10 @@ $offboardingRecords = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     <div class="row g-3">
                         <div class="col-md-6">
                             <label class="form-label">Employee Code</label>
-                            <select class="form-select" name="emp_code" required>
-                            <?php
-// Assuming $employeeList contains the result set from the query
-foreach ($offboardingRecords as $employee) {
-    echo "<option value='{$employee['emp_code']}'>{$employee['emp_code']}</option>";
-}
-?>
+                            <select class="form-select select2-employee" name="emp_code" required>
+                                <?php foreach ($offboardingRecords as $employee): ?>
+                                    <option value='<?php echo $employee['emp_code']; ?>'><?php echo $employee['emp_code']; ?></option>
+                                <?php endforeach; ?>
                             </select>
                         </div>
                         <div class="col-12">
@@ -119,68 +109,61 @@ foreach ($offboardingRecords as $employee) {
                 </form>
             </div>
         </div>
-          <!-- View Exit Interview Section -->
-          <div class="card section-card">
-    <div class="card-header bg-info text-white">
-        <h3>View Exit Interview</h3>
-    </div>
-    <div class="card-body">
-        <div class="row g-3">
-            <div class="col-md-6">
-                <label class="form-label">Employee Code</label>
-                <select class="form-select select2-employee" name="emp_code" id="emp_code" required>
-                    <?php
-                    // Assuming $offboardingRecords contains the result set from the query
-                    foreach ($offboardingRecords as $employee) {
-                        echo "<option value='{$employee['emp_code']}'>{$employee['emp_code']}</option>";
-                    }
-                    ?>
-                </select>
+
+        <!-- View Exit Interview Section -->
+        <div class="card section-card">
+            <div class="card-header bg-info text-white">
+                <h3>View Exit Interview</h3>
             </div>
-            <div class="col-md-6">
-                <button class="btn btn-info" id="searchButton">Search</button>
+            <div class="card-body">
+                <form id="ViewExitInterviewForm" onsubmit="viewExitInterview(event)">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Employee Code</label>
+                            <select class="form-select select2-employee" name="emp_code" id="emp_code" required>
+                                <?php foreach ($offboardingRecords as $employee): ?>
+                                    <option value='<?php echo $employee['emp_code']; ?>'><?php echo $employee['emp_code']; ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <button class="btn btn-info" id="searchButton">Search</button>
+                        </div>
+                    </div>
+                    <div id="resultContainerExit" class="mt-4 h-full w-full"></div>
+                </form>
             </div>
-            <div class="col-12" id="interviewResults"></div>
         </div>
-    </div>
-</div>
 
-
-        <!-- Process Employee Exit Section -->
-    
         <!-- Asset Management Section -->
         <div class="card section-card">
             <div class="card-header bg-warning">
                 <h3>Asset Management</h3>
             </div>
             <div class="card-body">
-                <form id="UpdateAssetStatusForm" onsubmit="return false;">
+                <form id="UpdateAssetStatusForm" onsubmit="submitAsset(event)">
                     <div class="row g-3">
                         <div class="col-md-4">
-                        <label class="form-label">Employee Code</label>
+                            <label class="form-label">Employee Code</label>
                             <select class="form-select select2-employee" name="emp_code" required>
-                            <?php
-// Assuming $employeeList contains the result set from the query
-foreach ($offboardingRecords as $employee) {
-    echo "<option value='{$employee['emp_code']}'>{$employee['emp_code']}</option>";
-}
-?>
+                                <?php foreach ($offboardingRecords as $employee): ?>
+                                    <option value='<?php echo $employee['emp_code']; ?>'><?php echo $employee['emp_code']; ?></option>
+                                <?php endforeach; ?>
                             </select>
                         </div>
                         <div class="col-md-4">
-  <label class="form-label" for="assetType">Asset Type</label>
-  <select class="form-select" id="asset_type" name="asset_type" required>
-    <option value="" disabled selected>Select an asset type</option>
-    <option value="Electronics">Electronics</option>
-    <option value="Furniture">Furniture</option>
-    <option value="Stationery">Stationery</option>
-    <option value="Software License">Software License</option>
-  </select>
-</div>
-
+                            <label class="form-label">Asset Type</label>
+                            <select class="form-select" id="asset_type" name="asset_type" required>
+                                <option value="" disabled selected>Select an asset type</option>
+                                <option value="Electronics">Electronics</option>
+                                <option value="Furniture">Furniture</option>
+                                <option value="Stationery">Stationery</option>
+                                <option value="Software License">Software License</option>
+                            </select>
+                        </div>
                         <div class="col-md-4">
                             <label class="form-label">Status</label>
-                            <select class="form-select" id="status name="status" required>
+                            <select class="form-select" id="status" name="status" required>
                                 <option value="0">Not Returned</option>
                                 <option value="1">Returned</option>
                             </select>
@@ -190,11 +173,11 @@ foreach ($offboardingRecords as $employee) {
                             <textarea class="form-control" id="asset_description" name="notes" rows="2" required></textarea>
                         </div>
                         <div class="col-md-4">
-            <label class="form-label">Returned Date</label>
-            <input type="date" class="form-control" name="return_date" min="<?php echo date('Y-m-d'); ?>" required>
-        </div>
+                            <label class="form-label">Returned Date</label>
+                            <input type="date" class="form-control" name="return_date" min="<?php echo date('Y-m-d'); ?>" required>
+                        </div>
                         <div class="col-12">
-                            <button class="btn btn-warning" onclick="submitAsset(event)">Update Asset</button>
+                            <button class="btn btn-warning" type="submit">Update Asset</button>
                         </div>
                     </div>
                 </form>
@@ -202,15 +185,13 @@ foreach ($offboardingRecords as $employee) {
             </div>
         </div>
 
-       
-
         <!-- Update Offboarding Task Section -->
         <div class="card section-card">
             <div class="card-header bg-warning">
                 <h3>Update Offboarding Task</h3>
             </div>
             <div class="card-body">
-                <form id="taskUpdateForm" onsubmit="return false;">
+                <form id="taskUpdateForm" onsubmit="submitTaskUpdateForm(event)">
                     <div class="row g-3">
                         <div class="col-md-6">
                             <label class="form-label">Task ID</label>
@@ -229,14 +210,12 @@ foreach ($offboardingRecords as $employee) {
                             <textarea class="form-control" name="notes" rows="2" required></textarea>
                         </div>
                         <div class="col-12">
-                            <button class="btn btn-warning" onclick="submitForm('UpdateOffboardingTask')">Update Task</button>
+                            <button class="btn btn-warning" type="submit">Update Task</button>
                         </div>
                     </div>
                 </form>
             </div>
         </div>
-
-        
 
         <!-- Complete Offboarding Section -->
         <div class="card section-card">
@@ -244,21 +223,18 @@ foreach ($offboardingRecords as $employee) {
                 <h3>Complete Offboarding</h3>
             </div>
             <div class="card-body">
-                <form id="completeOffboardingForm" onsubmit="return false;">
+                <form id="completeOffboardingForm" onsubmit="submitCompleteOffboardingForm(event)">
                     <div class="row g-3">
                         <div class="col-md-6">
-                        <label class="form-label">Employee Code</label>
+                            <label class="form-label">Employee Code</label>
                             <select class="form-select select2-employee" name="emp_code" required>
-                            <?php
-// Assuming $employeeList contains the result set from the query
-foreach ($offboardingRecords as $employee) {
-    echo "<option value='{$employee['emp_code']}'>{$employee['emp_code']}</option>";
-}
-?>
+                                <?php foreach ($offboardingRecords as $employee): ?>
+                                    <option value='<?php echo $employee['emp_code']; ?>'><?php echo $employee['emp_code']; ?></option>
+                                <?php endforeach; ?>
                             </select>
                         </div>
                         <div class="col-12">
-                            <button class="btn btn-danger" onclick="submitForm('CompleteOffboarding')">Finalize Offboarding</button>
+                            <button class="btn btn-danger" type="submit">Finalize Offboarding</button>
                         </div>
                     </div>
                 </form>
@@ -273,15 +249,12 @@ foreach ($offboardingRecords as $employee) {
             <div class="card-body">
                 <div class="row g-3">
                     <div class="col-md-6">
-                    <label class="form-label">Employee Code</label>
-                            <select class="form-select select2-employee" name="emp_code" required>
-                            <?php
-// Assuming $employeeList contains the result set from the query
-foreach ($offboardingRecords as $employee) {
-    echo "<option value='{$employee['emp_code']}'>{$employee['emp_code']}</option>";
-}
-?>
-                            </select>
+                        <label class="form-label">Employee Code</label>
+                        <select class="form-select select2-employee" name="emp_code" required>
+                            <?php foreach ($offboardingRecords as $employee): ?>
+                                <option value='<?php echo $employee['emp_code']; ?>'><?php echo $employee['emp_code']; ?></option>
+                            <?php endforeach; ?>
+                        </select>
                     </div>
                     <div class="col-md-6">
                         <button class="btn btn-success" onclick="loadOffboardingStatus()">Load Status</button>
@@ -303,128 +276,362 @@ foreach ($offboardingRecords as $employee) {
         <!-- Results Container -->
         <div id="resultContainer" class="mt-4"></div>
     </div>
-    
 
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <script>
-    const offboardingRecords = <?php echo json_encode($offboardingRecords); ?>; // Pass records from PHP
+        const offboardingRecords = <?php echo json_encode($offboardingRecords); ?>;
 
-    // Initialize Select2 for employee dropdown
-    $(document).ready(function () {
-        $('.select2-employee').select2({
-            placeholder: 'Select Employee Code',
-            allowClear: true
+        $(document).ready(function () {
+            $('.select2-employee').select2({
+                placeholder: 'Select Employee Code',
+                allowClear: true
+            });
         });
-    });
-    console.log(offboardingRecords);
 
-    // Handle form submission for initiating offboarding
-    function submitForm(event) {
-        event.preventDefault(); // Prevent default form submission
+        function submitForm(event) {
+            event.preventDefault();
+            const form = document.getElementById("initiateOffboardingForm");
+            const formData = new FormData(form);
+            const selectedOffboardingRecord = offboardingRecords.find(record => record.emp_code === formData.get("emp_code"));
+            console.log(selectedOffboardingRecord);
+            const data = {
+                action: "InitiateOffboarding",
+                emp_code: formData.get("emp_code"),
+                exit_type: formData.get("exit_type"),
+                last_working_day: formData.get("last_working_day"),
+                offboarding_records: selectedOffboardingRecord
+            };
 
-        const form = document.getElementById("initiateOffboardingForm");
-        const formData = new FormData(form);
-        const selectedOffboardingRecord = offboardingRecords.find(record => record.emp_code === formData.get("emp_code") );
-        // Collect form data for the offboarding initiation
-        const data = {
-            action: "InitiateOffboarding",
-            emp_code: formData.get("emp_code"),
-            exit_type: formData.get("exit_type"),
-            last_working_day: formData.get("last_working_day"),
-            offboarding_records: selectedOffboardingRecord // Include the offboarding records in the request
-        };
+            const submitButton = document.getElementById("submitButton");
+            const submitText = document.getElementById("submitText");
+            const submitSpinner = document.getElementById("submitSpinner");
 
-        const submitButton = document.getElementById("submitButton");
-        const submitText = document.getElementById("submitText");
-        const submitSpinner = document.getElementById("submitSpinner");
+            submitButton.disabled = true;
+            submitText.textContent = "Processing...";
+            submitSpinner.style.display = "inline-block";
 
-        // Disable button and show spinner
-        submitButton.disabled = true;
-        submitText.textContent = "Processing...";
-        submitSpinner.style.display = "inline-block";
+            fetch("test.php", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(result => {
+                const responseMessage = document.createElement("div");
+                responseMessage.className = "alert mt-3";
 
-        // Perform the fetch request
-        fetch("test.php", {
-    method: "POST",
-    headers: {
-        "Content-Type": "application/json"
-    },
-    body: JSON.stringify(data)
-})
-.then(response => response.json()) // Parse the JSON response
-.then(result => {
-    const responseMessage = document.createElement("div");
-    responseMessage.className = "alert mt-3";
+                if (result.code === 200) {
+                    responseMessage.classList.add("alert-success");
+                    responseMessage.textContent = result.message;
+                } else {
+                    responseMessage.classList.add("alert-danger");
+                    responseMessage.textContent = `Error: ${result.message}`;
+                }
 
-    if (result.code === 200) {
-        responseMessage.classList.add("alert-success");
-        responseMessage.textContent = result.message;
-    } else {
-        responseMessage.classList.add("alert-danger");
-        responseMessage.textContent = `Error: ${result.message}`;
-    }
-
-    form.appendChild(responseMessage);
-})
-.catch(error => {
-    console.error("Error:", error);
-    const errorMessage = document.createElement("div");
-    errorMessage.className = "alert alert-danger mt-3";
-    errorMessage.textContent = "An error occurred.";
-    form.appendChild(errorMessage);
-})
-.finally(() => {
-    submitButton.disabled = false;
-    submitText.textContent = "Initiate Process";
-    submitSpinner.style.display = "none";
-});
-    }
-</script>
-<script>
-    $(document).ready(function () {
-        $('.select2-employee').select2({
-            placeholder: 'Select Employee Code',
-            allowClear: true
-        });
-    });
-    function submitExitInterviewForm(event) {
-    event.preventDefault();
-
-    const form = document.getElementById("AddExitInterviewForm");
-    const formData = new FormData(form);
-
-    const data = {
-        action:'AddExitInterview',
-        emp_code: formData.get("emp_code"),
-        interviewer: formData.get("interviewer"),
-        reasons: formData.get("reasons"),
-        feedback: formData.get("feedback")
-    };
-
-    fetch("test.php", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify(data)
-    })
-    .then(response => response.json())
-    .then(result => {
-        if (result.code === 200) {
-            alert(result.message);
-        } else {
-            alert(`Error: ${result.message}`);
+                form.appendChild(responseMessage);
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                const errorMessage = document.createElement("div");
+                errorMessage.className = "alert alert-danger mt-3";
+                errorMessage.textContent = "An error occurred.";
+                form.appendChild(errorMessage);
+            })
+            .finally(() => {
+                submitButton.disabled = false;
+                submitText.textContent = "Initiate Process";
+                submitSpinner.style.display = "none";
+            });
         }
-    })
-    .catch(error => {
-        console.error("Error:", error);
-        alert("An error occurred while submitting the form.");
-    });
-}
 
-</script>
-    
+        function submitExitInterviewForm(event) {
+            event.preventDefault();
+            const form = document.getElementById("AddExitInterviewForm");
+            const formData = new FormData(form);
+
+            const data = {
+                action: 'AddExitInterview',
+                emp_code: formData.get("emp_code"),
+                interviewer: formData.get("interviewer"),
+                reasons: formData.get("reasons"),
+                feedback: formData.get("feedback")
+            };
+
+            fetch("test.php", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(result => {
+                const responseMessage = document.createElement("div");
+                responseMessage.className = "alert mt-3";
+
+                if (result.code === 200) {
+                    responseMessage.classList.add("alert-success");
+                    responseMessage.textContent = result.message;
+                    form.reset();
+                } else {
+                    responseMessage.classList.add("alert-danger");
+                    responseMessage.textContent = `Error: ${result.message}`;
+                }
+
+                form.appendChild(responseMessage);
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                const errorMessage = document.createElement("div");
+                errorMessage.className = "alert alert-danger mt-3";
+                errorMessage.textContent = "An error occurred while submitting the form.";
+                form.appendChild(errorMessage);
+            });
+        }
+
+        function viewExitInterview(event) {
+            event.preventDefault();
+            const form = document.getElementById("ViewExitInterviewForm");
+            const formData = new FormData(form);
+            const empCode = formData.get("emp_code");
+
+            if (!empCode) {
+                alert("Please select an employee code.");
+                return;
+            }
+
+            const data = {
+                action: 'ViewExitInterview',
+                emp_code: empCode
+            };
+
+            fetch("test.php", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(result => {
+                const resultsContainer = document.getElementById("resultContainerExit");
+                const responseMessage = document.createElement("div");
+                responseMessage.className = "alert mt-3";
+
+                if (result.code === 200) {
+                    const interviewData = result.message;
+                    responseMessage.classList.add("alert-success");
+                    responseMessage.innerHTML = `
+                        <strong>Exit Interview Details:</strong><br>
+                        <strong>Last Working Day:</strong> ${interviewData.last_working_day}<br>
+                        <strong>Offboarding Type:</strong> ${interviewData.offboarding_type}<br>
+                        <strong>Reason:</strong> ${interviewData.reason || 'N/A'}<br>
+                        <strong>Exit Interview:</strong> ${interviewData.exit_interview || 'N/A'}<br>
+                        <strong>Asset Return Status:</strong> ${interviewData.asset_return_status ? 'Returned' : 'Not Returned'}<br>
+                        <strong>Account Deactivated:</strong> ${interviewData.account_deactivated ? 'Yes' : 'No'}<br>
+                        <strong>Data Export Requested:</strong> ${interviewData.data_export_requested ? 'Yes' : 'No'}<br>
+                    `;
+                } else {
+                    responseMessage.classList.add("alert-danger");
+                    responseMessage.textContent = `Error: ${result.message}`;
+                }
+
+                resultsContainer.appendChild(responseMessage);
+            })
+            .catch(error => {
+                const resultsContainer = document.getElementById("resultContainerExit");
+                console.error("Error:", error);
+                const errorMessage = document.createElement("div");
+                errorMessage.className = "alert alert-danger mt-3";
+                errorMessage.textContent = "An error occurred while fetching the exit interview details.";
+                resultsContainer.appendChild(errorMessage);
+            });
+        }
+
+        function submitAsset(event) {
+            event.preventDefault();
+            const form = document.getElementById("UpdateAssetStatusForm");
+            const formData = new FormData(form);
+
+            const data = {
+                action: 'UpdateAssetStatus',
+                emp_code: formData.get("emp_code"),
+                asset_type: formData.get("asset_type"),
+                status: formData.get("status"),
+                notes: formData.get("notes"),
+                return_date: formData.get("return_date")
+            };
+
+            fetch("test.php", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(result => {
+                const assetStatusContainer = document.getElementById("assetStatusContainer");
+                const responseMessage = document.createElement("div");
+                responseMessage.className = "alert mt-3";
+
+                if (result.code === 200) {
+                    responseMessage.classList.add("alert-success");
+                    responseMessage.textContent = result.message;
+                } else {
+                    responseMessage.classList.add("alert-danger");
+                    responseMessage.textContent = `Error: ${result.message}`;
+                }
+
+                assetStatusContainer.appendChild(responseMessage);
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                const errorMessage = document.createElement("div");
+                errorMessage.className = "alert alert-danger mt-3";
+                errorMessage.textContent = "An error occurred while updating the asset status.";
+                assetStatusContainer.appendChild(errorMessage);
+            });
+        }
+
+        function submitTaskUpdateForm(event) {
+            event.preventDefault();
+            const form = document.getElementById("taskUpdateForm");
+            const formData = new FormData(form);
+
+            const data = {
+                action: 'UpdateTask',
+                task_id: formData.get("task_id"),
+                status: formData.get("status"),
+                notes: formData.get("notes")
+            };
+
+            fetch("test.php", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(result => {
+                const responseMessage = document.createElement("div");
+                responseMessage.className = "alert mt-3";
+
+                if (result.code === 200) {
+                    responseMessage.classList.add("alert-success");
+                    responseMessage.textContent = result.message;
+                } else {
+                    responseMessage.classList.add("alert-danger");
+                    responseMessage.textContent = `Error: ${result.message}`;
+                }
+
+                form.appendChild(responseMessage);
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                const errorMessage = document.createElement("div");
+                errorMessage.className = "alert alert-danger mt-3";
+                errorMessage.textContent = "An error occurred while updating the task.";
+                form.appendChild(errorMessage);
+            });
+        }
+
+        function submitCompleteOffboardingForm(event) {
+            event.preventDefault();
+            const form = document.getElementById("completeOffboardingForm");
+            const formData = new FormData(form);
+
+            const data = {
+                action: 'CompleteOffboarding',
+                emp_code: formData.get("emp_code")
+            };
+
+            fetch("test.php", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(result => {
+                const responseMessage = document.createElement("div");
+                responseMessage.className = "alert mt-3";
+
+                if (result.code === 200) {
+                    responseMessage.classList.add("alert-success");
+                    responseMessage.textContent = result.message;
+                } else {
+                    responseMessage.classList.add("alert-danger");
+                    responseMessage.textContent = `Error: ${result.message}`;
+                }
+
+                form.appendChild(responseMessage);
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                const errorMessage = document.createElement("div");
+                errorMessage.className = "alert alert-danger mt-3";
+                errorMessage.textContent = "An error occurred while completing the offboarding process.";
+                form.appendChild(errorMessage);
+            });
+        }
+
+        function loadOffboardingStatus() {
+            const empCode = document.querySelector("#statusDisplaySection select").value;
+
+            if (!empCode) {
+                alert("Please select an employee code.");
+                return;
+            }
+
+            const data = {
+                action: 'LoadOffboardingStatus',
+                emp_code: empCode
+            };
+
+            fetch("test.php", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(result => {
+                const statusDetails = document.getElementById("statusDetails");
+                const responseMessage = document.createElement("div");
+                responseMessage.className = "alert mt-3";
+
+                if (result.code === 200) {
+                    const statusData = result.data;
+                    responseMessage.classList.add("alert-success");
+                    responseMessage.innerHTML = `
+                        <strong>Offboarding Status:</strong><br>
+                        <strong>Employee Code:</strong> ${statusData.emp_code}<br>
+                        <strong>Status:</strong> ${statusData.status}<br>
+                        <strong>Last Updated:</strong> ${statusData.last_updated}<br>
+                    `;
+                } else {
+                    responseMessage.classList.add("alert-danger");
+                    responseMessage.textContent = `Error: ${result.message}`;
+                }
+
+                statusDetails.appendChild(responseMessage);
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                const errorMessage = document.createElement("div");
+                errorMessage.className = "alert alert-danger mt-3";
+                errorMessage.textContent = "An error occurred while loading the offboarding status.";
+                statusDetails.appendChild(errorMessage);
+            });
+        }
+    </script>
 </body>
 </html>

@@ -19,10 +19,25 @@ function sendResponse($code, $message) {
 function syncEmployeeData($inputData) {
     global $db;
 
-    // Check if the required fields are present
-
     // Get the specific employee data from the input
     $data = $inputData['offboarding_records'];
+
+    // Convert dob to YYYY-MM-DD format if it exists and is in DD/MM/YYYY format
+    if (isset($data['dob'])) {
+        $dob = $data['dob'];
+        // Check if the date is in DD/MM/YYYY format
+        if (preg_match('/^\d{2}\/\d{2}\/\d{4}$/', $dob)) {
+            // Convert DD/MM/YYYY to YYYY-MM-DD
+            $dateParts = explode('/', $dob);
+            $data['dob'] = $dateParts[2] . '-' . $dateParts[1] . '-' . $dateParts[0];
+        } elseif (preg_match('/^\d{4}-\d{2}-\d{2}$/', $dob)) {
+            // If it's already in YYYY-MM-DD format, keep it as is
+            $data['dob'] = $dob;
+        } else {
+            // If the format is invalid, set it to NULL or handle the error
+            $data['dob'] = null; // or throw an exception
+        }
+    }
 
     try {
         // Prepare the SQL statement for inserting the employee data
@@ -77,8 +92,7 @@ function syncEmployeeData($inputData) {
         $inputDataString = json_encode($inputData);
         sendResponse(500, 'Failed to insert employee data: ' . $e->getMessage() . ' Input Data: ' . $inputDataString);
     }
-
-    sendResponse(200, 'Employee data synced successfully');
+    return ['code' => 200, 'message' => 'Employee data synced successfully'];
 }
 
 function initiateOffboarding($inputData) {
@@ -95,7 +109,7 @@ function initiateOffboarding($inputData) {
 
     try {
         $stmt = $db->prepare("INSERT INTO Offboarding 
-                            (emp_code, last_work ing_day, offboarding_type, reason, exit_interview) 
+                            (emp_code, last_working_day, offboarding_type, reason, exit_interview) 
                             VALUES (?, ?, ?, ?, ?)");
         $stmt->execute([$empCode, $lastWorkingDay, $exitType, $reason, $exitInterview]);
 
@@ -137,7 +151,7 @@ function addExitInterview($data) {
                                   WHERE emp_code = :emp_code";
         $updateOffboardingStmt = $db->prepare($updateOffboardingSql);
         
-        $reason = $data['reason'];
+        $reason = $data['reasons'] ?? "";
         $interviewer = $data['interviewer'];
         $empCode = $data['emp_code'];
 
@@ -167,24 +181,60 @@ function addExitInterview($data) {
         $db->commit();
         sendResponse(200, "Records updated and feedback inserted successfully.");
     } catch (Exception $e) {
-        // Roll back the transaction in case of error
         $db->rollBack();
-        sendResponse(500, "Error: " . $e->getMessage());
+        // Roll back the transaction in case of error
+        $inputDataString = json_encode($data);
+        sendResponse(500, 'Failed to insert employee data: ' . $e->getMessage() . ' Input Data: ' . $inputDataString);
+    }
+}
+function viewExitInterview($data) {
+    global $db; // Assuming $db is your database connection
+    $emp_code = $data['emp_code'];
+    try {
+        $stmt = $db->prepare("
+            SELECT 
+                o.offboarding_id,
+                o.emp_code,
+                o.last_working_day,
+                o.offboarding_type,
+                o.reason,
+                o.exit_interview,
+                o.asset_return_status,
+                o.account_deactivated,
+                o.data_export_requested
+            FROM 
+                Offboarding o
+            WHERE 
+                o.emp_code = :emp_code
+        ");
+
+        $stmt->execute([':emp_code' => $emp_code]);
+        $result = $stmt->fetch(PDO::FETCH_ASSOC); // Fetch the result as an associative array
+
+        if ($result) {
+            sendResponse(200,$result); // Return success response with data
+        } else {
+            return ['code' => 404, 'message' => 'No exit interview found for this employee.'];
+        }
+    } catch (Exception $e) {
+        return ['code' => 500, 'message' => 'Error retrieving exit interview: ' . $e->getMessage()];
     }
 }
 
 if ($action === 'InitiateOffboarding') {
     $syncResult = syncEmployeeData($inputData);
     if ($syncResult['code'] === 200) {
-        $offboardingResult = initiateOffboarding($inputData);
-        $response = $offboardingResult;
+        $offboardingResult = initiateOffboarding($inputData); // Call the offboarding function
+        $response = $offboardingResult; // This should also return a response
     } else {
-        $response = $syncResult;
+        sendResponse(500, 'Failed to insert employee data: ' . $e->getMessage()); // Return the sync error response
     }
 } else if ($action === 'AddExitInterview') {
     addExitInterview($inputData);
 } else if ($action === 'UpdateAssetStatus') {
     updateAssetStatus($inputData);
+} else if($action === 'ViewExitInterview'){
+    viewExitInterview($inputData);
 }
 
 header('Content-Type: application/json');
