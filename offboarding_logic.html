@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+    :root {
+        --primary-color: #2c3e50;
+        --secondary-color: #34495e;
+        --accent-color: #3498db;
+        --success-color: #27ae60;
+        --warning-color: #f39c12;
+        --danger-color: #c0392b;
+        --light-bg: #f8f9fa;
+    }
+
+    body {
+        background-color: #f5f6fa;
+        color: var(--primary-color);
+        font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        margin: 0;
+        padding: 0;
+    }
+
+    .portal-header {
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        color: white;
+        padding: 2rem 0;
+        margin-bottom: 0;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 1rem;
+    }
+
+    .portal-title {
+        font-weight: 300;
+        letter-spacing: 0.5px;
+        margin: 0;
+    }
+
+    .portal-subtitle {
+        opacity: 0.8;
+        font-size: 1rem;
+        margin: 0.5rem 0 0 0;
+    }
+
+    /* Tab Styling */
+    .tabs {
+        background: white;
+        padding: 1rem 1rem 0;
+        border-bottom: 1px solid #dee2e6;
+    }
+
+    .tab-buttons {
+        display: flex;
+        gap: 0.5rem;
+        margin-bottom: -1px;
+    }
+
+    .tab-button {
+        padding: 0.75rem 1.5rem;
+        background: none;
+        border: 1px solid transparent;
+        border-radius: 6px 6px 0 0;
+        cursor: pointer;
+        font-weight: 500;
+        color: var(--secondary-color);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .tab-button.active {
+        background: white;
+        border-color: #dee2e6;
+        border-bottom-color: white;
+        color: var(--accent-color);
+    }
+
+    .tab-button:hover:not(.active) {
+        background: var(--light-bg);
+    }
+
+    /* Tab Content */
+    .tab-content {
+        display: none;
+        padding: 2rem;
+        background: white;
+        animation: fadeIn 0.3s ease-in-out;
+    }
+
+    .tab-content.active {
+        display: block;
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-row {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+    }
+
+    .form-label {
+        font-weight: 500;
+        color: var(--secondary-color);
+        margin-bottom: 0.5rem;
+        display: block;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 0.625rem;
+        border: 1px solid #dee2e6;
+        border-radius: 6px;
+        box-sizing: border-box;
+    }
+
+    .form-control:focus {
+        border-color: var(--accent-color);
+        outline: none;
+        box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.25);
+    }
+
+    .btn {
+        padding: 0.625rem 1.25rem;
+        border-radius: 6px;
+        font-weight: 500;
+        border: none;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .btn-primary {
+        background-color: var(--accent-color);
+        color: white;
+    }
+
+    .btn-primary:hover {
+        background-color: #2980b9;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+</style>
+</head>
+<body>
+    <header class="portal-header">
+        <div class="container">
+            <h1 class="portal-title">Enterprise Offboarding Portal</h1>
+            <p class="portal-subtitle">Streamline your employee offboarding process</p>
+        </div>
+    </header>
+
+    <div class="tabs">
+        <div class="container">
+            <div class="tab-buttons">
+                <button class="tab-button active" onclick="openTab(event, 'initiateTab')">
+                    <i class="fas fa-user-minus"></i>
+                    Initiate Offboarding
+                </button>
+                <button class="tab-button" onclick="openTab(event, 'interviewTab')">
+                    <i class="fas fa-comments"></i>
+                    Exit Interview
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div id="initiateTab" class="tab-content active">
+            <form id="initiateOffboardingForm" onsubmit="return false;">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Employee Code</label>
+                        <select class="form-control" name="emp_code" required>
+                            <option value="" disabled selected>Select Employee Code</option>
+                            <option value="EMP001">EMP001 - John Doe</option>
+                            <option value="EMP002">EMP002 - Jane Smith</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Exit Type</label>
+                        <select class="form-control" name="exit_type" required>
+                            <option value="" disabled selected>Select Exit Type</option>
+                            <option value="resignation">Resignation</option>
+                            <option value="retirement">Retirement</option>
+                            <option value="termination">Termination</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Last Working Day</label>
+                        <input type="date" class="form-control" name="last_working_day" required>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary">Initiate Process</button>
+            </form>
+        </div>
+
+        <div id="interviewTab" class="tab-content">
+            <form id="exitInterviewForm" onsubmit="return false;">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Employee Code</label>
+                        <select class="form-control" name="emp_code" required>
+                            <option value="" disabled selected>Select Employee Code</option>
+                            <option value="EMP001">EMP001 - John Doe</option>
+                            <option value="EMP002">EMP002 - Jane Smith</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Interviewer</label>
+                        <input type="text" class="form-control" name="interviewer" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Reasons for Leaving</label>
+                    <textarea class="form-control" name="reasons" rows="2" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Feedback</label>
+                    <textarea class="form-control" name="feedback" rows="3" required></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">Submit Interview</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function openTab(evt, tabName) {
+            var i, tabcontent, tablinks;
+            
+            // Hide all tab content
+            tabcontent = document.getElementsByClassName("tab-content");
+            for (i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].classList.remove("active");
+            }
+            
+            // Remove active class from all tab buttons
+            tablinks = document.getElementsByClassName("tab-button");
+            for (i = 0; i < tablinks.length; i++) {
+                tablinks[i].classList.remove("active");
+            }
+            
+            // Show the selected tab and activate the button
+            document.getElementById(tabName).classList.add("active");
+            evt.currentTarget.classList.add("active");
+        }
+    </script>
+</body>
+</html>

@@ -366,6 +366,7 @@ $offboardingRecords = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <script>
+         const offboardingRecords = <?php echo json_encode($offboardingRecords); ?>;
         // Initialize Select2
         $(document).ready(function() {
             $('.select2-employee').select2({
@@ -447,6 +448,8 @@ $offboardingRecords = $stmt->fetchAll(PDO::FETCH_ASSOC);
             const submitButton = document.getElementById('submitButton');
             const submitText = document.getElementById('submitText');
             const submitSpinner = document.getElementById('submitSpinner');
+            const selectedOffboardingRecord = offboardingRecords.find(record => record.emp_code === formData.get("emp_code"));
+            console.log(selectedOffboardingRecord);
             
             submitButton.disabled = true;
             submitText.textContent = 'Processing...';
@@ -456,7 +459,8 @@ $offboardingRecords = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 action: 'InitiateOffboarding',
                 emp_code: formData.get('emp_code'),
                 exit_type: formData.get('exit_type'),
-                last_working_day: formData.get('last_working_day')
+                last_working_day: formData.get('last_working_day'),
+                offboarding_records: selectedOffboardingRecord
             };
 
             try {
