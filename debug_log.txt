@@ -137,3 +137,9 @@
 {"action":"GetTask","emp_code":"WY02"}
 {"action":"GetTask","emp_code":"WY02"}
 {"action":"GetTask","emp_code":"WY02"}
+{"action":"GetTask","emp_code":"WY02"}
+{"action":"ViewExitInterview","emp_code":"WY01"}
+{"action":"ViewExitInterview","emp_code":"WY02"}
+{"action":"ViewExitInterview","emp_code":"WY04"}
+{"action":"TaskAssign","emp_code":"WY01","task_title":"sdf","task_description":"asdf","due_date":"2025-02-12"}
+{"action":"TaskAssign","emp_code":"WY01","task_title":"sdf","task_description":"asdf","due_date":"2025-02-12"}
