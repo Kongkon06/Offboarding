@@ -581,57 +581,147 @@ $offboardingRecords = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 form.appendChild(errorMessage);
             });
         }
-
-        function loadOffboardingStatus() {
-            const empCode = document.querySelector("#statusDisplaySection select").value;
-
-            if (!empCode) {
-                alert("Please select an employee code.");
-                return;
-            }
-
-            const data = {
-                action: 'LoadOffboardingStatus',
-                emp_code: empCode
-            };
-
-            fetch("test.php", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify(data)
-            })
-            .then(response => response.json())
-            .then(result => {
-                const statusDetails = document.getElementById("statusDetails");
-                const responseMessage = document.createElement("div");
-                responseMessage.className = "alert mt-3";
-
-                if (result.code === 200) {
-                    const statusData = result.data;
-                    responseMessage.classList.add("alert-success");
-                    responseMessage.innerHTML = `
-                        <strong>Offboarding Status:</strong><br>
-                        <strong>Employee Code:</strong> ${statusData.emp_code}<br>
-                        <strong>Status:</strong> ${statusData.status}<br>
-                        <strong>Last Updated:</strong> ${statusData.last_updated}<br>
-                    `;
-                } else {
-                    responseMessage.classList.add("alert-danger");
-                    responseMessage.textContent = `Error: ${result.message}`;
-                }
-
-                statusDetails.appendChild(responseMessage);
-            })
-            .catch(error => {
-                console.error("Error:", error);
-                const errorMessage = document.createElement("div");
-                errorMessage.className = "alert alert-danger mt-3";
-                errorMessage.textContent = "An error occurred while loading the offboarding status.";
-                statusDetails.appendChild(errorMessage);
-            });
-        }
+        
     </script>
+    <script>
+    async function submitTaskUpdateForm(event) {
+    event.preventDefault(); // Prevent the form from submitting the traditional way
+
+    // Get form data
+    const form = event.target;
+    const formData = new FormData(form);
+
+    // Convert form data to a JSON object
+    const taskData = {
+        action:'UpdateTask',
+      task_id: formData.get('task_id'),
+      task_status: formData.get('status'),
+      notes: formData.get('notes'),
+    };
+
+    try {
+      // Send POST request
+      const response = await fetch('task_handler.php', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(taskData),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Error: ${response.statusText}`);
+      }
+
+      const result = await response.json();
+      alert('Task updated successfully: ' + JSON.stringify(result));
+    } catch (error) {
+      alert('Failed to update task: ' + error.message);
+    }
+  }
+
+  function submitCompleteOffboardingForm(event) {
+    event.preventDefault(); // Prevent page reload
+
+    // Create a FormData object to gather form input
+    const form = document.getElementById("completeOffboardingForm");
+    const formData = new FormData(form);
+
+    // Convert FormData to JSON
+    const data = {
+        action : 'FinaliseOffboarding',
+        emp_code:formData.get('emp_code')
+    }
+    // Send POST request to the PHP backend
+    fetch("task_handler.php", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.message) {
+            alert(data.message); // Display the backend response message
+        } else {
+            alert("Unexpected response from the server.");
+        }
+    })
+    .catch(error => {
+        console.error("Error:", error);
+        alert("An error occurred while completing the offboarding process.");
+    });
+}
+
+</script>
+
+<script>
+    function displayOffboardingDetails(empCode, details) {
+    const { last_working_day, offboarding_type, reason, asset_return_status, account_deactivated, data_export_requested } = details;
+
+    const statusDetails = document.getElementById('statusDetails');
+    statusDetails.innerHTML = ''; // Clear previous content
+
+    // Create header element
+    const header = document.createElement('h4');
+    header.textContent = `Offboarding Details for Employee: ${empCode}`;
+    statusDetails.appendChild(header);
+
+    // Helper function to create and append a paragraph
+    const createDetailParagraph = (label, value) => {
+        const paragraph = document.createElement('p');
+        const strong = document.createElement('strong');
+        strong.textContent = `${label}: `;
+        paragraph.appendChild(strong);
+        paragraph.appendChild(document.createTextNode(value));
+        statusDetails.appendChild(paragraph);
+    };
+
+    createDetailParagraph('Last Working Day', last_working_day);
+    createDetailParagraph('Offboarding Type', offboarding_type);
+    createDetailParagraph('Reason', reason || 'N/A');
+    createDetailParagraph('Asset Return Status', asset_return_status ? 'Returned' : 'Pending');
+    createDetailParagraph('Account Deactivated', account_deactivated ? 'Yes' : 'No');
+    createDetailParagraph('Data Export Requested', data_export_requested ? 'Yes' : 'No');
+}
+
+function loadOffboardingStatus() {
+    event.preventDefault(); // Prevent page reload
+
+    // Create a FormData object to gather form input
+    const form = document.getElementById("completeOffboardingForm");
+    const formData = new FormData(form);
+
+    // Make an AJAX request to fetch offboarding status
+    const data = {
+        action:'LoadStatus',
+        emp_code:formData.get('emp_code'),
+    }
+    fetch('task_handler.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+    })
+        .then(response => response.json())
+        .then(data => {
+            const statusDetails = document.getElementById('statusDetails');
+            statusDetails.innerHTML = ''; // Clear previous content
+
+            if (data.success) {
+                displayOffboardingDetails(formData.get('emp_code'), data.details);
+            } else {
+                statusDetails.innerHTML = `<p class="text-danger">${data.message}</p>`;
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred while fetching offboarding status.');
+        });
+}
+</script>
+
 </body>
 </html>

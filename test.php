@@ -165,8 +165,8 @@ function addExitInterview($data) {
         }
 
         // Insert a new record into the `Feedback` table
-        $insertFeedbackSql = "INSERT INTO Feedback (emp_code, feedback_type, feedback_text) 
-                               VALUES (:emp_code, :feedback_type, :feedback_text)";
+        $insertFeedbackSql = "INSERT INTO Feedback (emp_code, feedback_type, employee_feedback) 
+                               VALUES (:emp_code, :feedback_type, :employee_feedback)";
         $insertFeedbackStmt = $db->prepare($insertFeedbackSql);
 
         $feedbackType = 'critic';
@@ -174,7 +174,7 @@ function addExitInterview($data) {
 
         $insertFeedbackStmt->bindParam(':emp_code', $empCode);
         $insertFeedbackStmt->bindParam(':feedback_type', $feedbackType);
-        $insertFeedbackStmt->bindParam(':feedback_text', $feedbackText);
+        $insertFeedbackStmt->bindParam(':employee_feedback', $feedbackText);
         $insertFeedbackStmt->execute();
 
         // Commit the transaction

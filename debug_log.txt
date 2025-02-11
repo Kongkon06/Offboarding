@@ -143,3 +143,28 @@
 {"action":"ViewExitInterview","emp_code":"WY04"}
 {"action":"TaskAssign","emp_code":"WY01","task_title":"sdf","task_description":"asdf","due_date":"2025-02-12"}
 {"action":"TaskAssign","emp_code":"WY01","task_title":"sdf","task_description":"asdf","due_date":"2025-02-12"}
+{"action":"TaskAssign","emp_code":"WY03","task_title":"asdf","task_description":"asfd","due_date":"2025-02-12"}
+{"action":"TaskAssign","emp_code":"WY04","task_title":"asdf","task_description":"asfd","due_date":"2025-02-12"}
+{"action":"TaskAssign","emp_code":"WY06","task_title":"asdffasdf","task_description":"asdfasf","due_date":"2025-02-12"}
+{"action":"UpdateAssetStatus","emp_code":"WY01","asset_type":"Electronics","status":"0","notes":"asdfdasf","return_date":"2025-02-12"}
+{"action":"UpdateTask","task_id":"2","status":"in-progress","notes":"asdfasf"}
+{"action":"UpdateTask","task_id":"2","status":"in-progress","notes":"sfg"}
+{"action":"UpdateTask","task_id":"2","status":"completed","notes":"asfdaf"}
+{"action":"UpdateTask","task_id":"2","task_status":"completed","notes":"asdf"}
+{"action":"UpdateTask","task_id":"2","task_status":"pending","notes":"asdf"}
+{"action":"UpdateTask","task_id":"2","task_status":"completed","notes":"asdf"}
+{"action":"CompleteOffboarding","emp_code":"WY02"}
+{"emp_code":"WY02"}
+{"action":"FinaliseOffboarding","emp_code":"WY02"}
+{"action":"FinaliseOffboarding","emp_code":"WY02"}
+{"action":"FinaliseOffboarding","emp_code":"WY02"}
+{"action":"AddExitInterview","emp_code":"WY02","interviewer":"asdfa","reasons":"asdfaf","feedback":"asdfafs"}
+{"action":"InitiateOffboarding","emp_code":"WY02","exit_type":"retirement","last_working_day":"2025-02-13","offboarding_records":{"emp_id":"12","emp_code":"WY02","emp_password":"20eabe5d64b0e216796e834f52d61fd0b70332fc","first_name":"Kongkon","last_name":"Bora","dob":"09\/26\/2005","gender":"male","merital_status":"Single","nationality":"Indian","address":"Hi there","city":"guwahati","state":"Assam","country":"India","email":"kbora3525@gmail.com","mobile":"09395591126","telephone":"","identity_doc":"Aadhar Card","identity_no":"1212121212","emp_type":"Intern","joining_date":"12\/24\/2024","blood_group":"O+","photo":"WY02.jpg","designation":"","department":"","pan_no":"","bank_name":"","account_no":"","ifsc_code":"","pf_account":"","created":"2024-12-31 12:00:10"}}
+{"action":"InitiateOffboarding","emp_code":"WY02","exit_type":"retirement","last_working_day":"2025-02-13","offboarding_records":{"emp_id":"12","emp_code":"WY02","emp_password":"20eabe5d64b0e216796e834f52d61fd0b70332fc","first_name":"Kongkon","last_name":"Bora","dob":"09\/26\/2005","gender":"male","merital_status":"Single","nationality":"Indian","address":"Hi there","city":"guwahati","state":"Assam","country":"India","email":"kbora3525@gmail.com","mobile":"09395591126","telephone":"","identity_doc":"Aadhar Card","identity_no":"1212121212","emp_type":"Intern","joining_date":"12\/24\/2024","blood_group":"O+","photo":"WY02.jpg","designation":"","department":"","pan_no":"","bank_name":"","account_no":"","ifsc_code":"","pf_account":"","created":"2024-12-31 12:00:10"}}
+{"action":"AddExitInterview","emp_code":"WY02","interviewer":"asdf","reasons":"asdf","feedback":"asdf"}
+{"action":"AddExitInterview","emp_code":"WY02","interviewer":"asdf","reasons":"asdf","feedback":"asdf"}
+{"action":"LoadStatus","emp_code":"WY01"}
+{"action":"LoadStatus","emp_code":"WY01"}
+{"action":"LoadStatus","emp_code":"WY01"}
+{"action":"LoadStatus","emp_code":"WY01"}
+{"action":"FinaliseOffboarding","emp_code":"WY02"}
