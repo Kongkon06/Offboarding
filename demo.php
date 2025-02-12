@@ -166,6 +166,7 @@ $offboardingRecords = $stmt->fetchAll(PDO::FETCH_ASSOC);
             border-radius: 4px;
             margin: 1rem 0;
         }
+        
 
         /* Custom animations */
         @keyframes fadeIn {
